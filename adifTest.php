@@ -7,9 +7,7 @@ $data = <<<FOO
 <TAG1:6>value1<TAG2:6>value2<TAG3:6>value3<EOR>
 FOO;
 		try{
-			$adif = new adif();
-			$adif->load($data);
-			$adif->initialize();
+			$adif = new adif($data);
 		} catch (Exception $expected) {
 			return;
 		}
@@ -24,9 +22,7 @@ test test test
 <EOH>
 <TAG1:6>value1<TAG2:7>value23<TAG3:8>value456<EOR>
 FOO;
-		$adif = new adif();
-		$adif->load($data);
-		$adif->initialize();
+		$adif = new adif($data);
 		$data = $adif->parser();
 		$expected = array(
 				array(
@@ -48,9 +44,7 @@ test test test
 #test
 <TAG_1:6>value4<TAG-2:6>value5<TAG3:6>value6<EOR>
 FOO;
-		$adif = new adif();
-		$adif->load($data);
-		$adif->initialize();
+		$adif = new adif($data);
 		$data = $adif->parser();
 		$expected = array(
 				array(
@@ -74,9 +68,7 @@ $data = <<<FOO
 <TAG1:3>値1<TAG2:3>値2値<TAG3:3>値3<EOR>
 <TAG1:3>値4<TAG2:3>値5<TAG3:3>値6<EOR>
 FOO;
-		$adif = new adif();
-		$adif->load(mb_convert_encoding($data, 'sjis-win', 'utf-8'));
-		$adif->initialize();
+		$adif = new adif(mb_convert_encoding($data, 'sjis-win', 'utf-8'));
 		$data = $adif->parser();
 		$expected = array(
 				array(
@@ -93,7 +85,31 @@ FOO;
 		$this->assertEquals($adif->parser(), $expected);
 	}
 	
-
+	public function testJapaneseData2() {
+	
+		$data = <<<FOO
+<EOH>
+<TAG1:2>値1<TAG2:2>値2<TAG3:2>値3<EOR>
+<TAG1:2>値4<TAG2:2>値5<TAG3:2>値6値<EOR>
+FOO;
+		$adif = new adif($data, array('code' => 'utf-8'));
+		$data = $adif->parser();
+		$expected = array(
+				array(
+						'TAG1' => '値1',
+						'TAG2' => '値2',
+						'TAG3' => '値3',
+				),
+				array(
+						'TAG1' => '値4',
+						'TAG2' => '値5',
+						'TAG3' => '値6',
+				)
+		);
+		$this->assertEquals($adif->parser(), $expected);
+	}
+	
+	
  	public function testRealData() {
 
 $data = <<<FOO
@@ -124,9 +140,7 @@ Generated on 2011-11-22 at 02:15:23Z for WN4AZY
 <app_monolog_compression:3>off
 <eor>
 FOO;
-		$adif = new adif();
-		$adif->load($data);
-		$adif->initialize();
+		$adif = new adif($data);
 		$data = $adif->parser();
 		$expected = array(
 				array(
@@ -159,9 +173,7 @@ test test test
 <EOH>
 <TAG1:7>valu:e1<TAG2:7>va>lue2<TAG3:8>va<>lue3<EOR>
 FOO;
-		$adif = new adif();
-		$adif->load($data);
-		$adif->initialize();
+		$adif = new adif($data);
 		$data = $adif->parser();
 		$expected = array(
 				array(
