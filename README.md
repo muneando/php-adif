@@ -1,12 +1,12 @@
 php-adif
 ======================
-アマチュア無線のログの交換で使用されるADIF型式のデータを解析して、PHPの配列に展開するためのクラスライブラリです。
- 
- 
-使い方
+This software is a class library that analyzes the data of the type used in the exchange of ADIF log of amateur radio, to deploy an array of PHP.
+
+
+Usage
 ------
 
-データを直接パラメータに引き渡す場合：
+When passing parameters directly to the data:
 
 	$data = <<<FOO
 		test test test
@@ -16,33 +16,33 @@ php-adif
 		$adif = new adif($data);
 		$data = $adif->parser();
 
-ADIFファイルを指定する場合：
+ADIF file to specify:
 
 	$adif = new adif('LOGLIST.adi');
 	$data = $adif->parser();
 
-ADIFファイルは、Hamlogから出力されたファイルを元にしています。したがいまして、文字コードはシフトJISで、値長はマルチバイトが２バイトで格納しなければいけません。UTF-8ならマルチバイトの文字でも１バイトで指定してください。
-その場合は、
+ADIF files are based on the file that is output from the Hamlog. Accordingly, the character code in the Shift-JIS, length value should be stored with a 2-byte multi-byte. Please specify in one byte in a multi-byte character if UTF-8.
+In that case,
 
 	$adif = new adif('LOGLIST.adi', array('code' => 'utf-8'));
 
-のようにオプションでコードを指定してください。PHPの配列に展開されるとUTF-8に変換されます。
+Please specify the option code as. Will be converted to UTF-8 and will be deployed in an array of PHP.
 
-使い方の詳細は、PHPUnitのテストケースファイル（adifTest.php）を参照してください。
+Details on how to use these functions, please refer to the (adifTest.php) test case files of PHPUnit.
 
 
-サポート
+Support
 ----------
-バグがを見つけた場合は、テストケースを追加して、ご報告くださるようご協力さい。
+If you find any bugs, add a test case, please report it.
 
 
-参照
+Reference
 ----------
 
-ADIFデータフォーマット仕様　[http://www.adif.org/](http://www.adif.org/)
+ADIF data format specification　[http://www.adif.org/](http://www.adif.org/)
 
  
-ライセンス
+License
 ----------
 Copyright &copy; 2012 mune ando
 Listributed under the [MIT License][mit].
