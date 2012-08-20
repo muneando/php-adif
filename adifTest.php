@@ -61,6 +61,27 @@ FOO;
 		$this->assertEquals($adif->parser(), $expected);
 	}
 	
+	public function testComment() {
+
+$data = <<<FOO
+test test test
+<EOH>
+#test
+<TAG1:7>value#1<TAG2:6>value2<tag3:6>value3<Eor>
+#test
+#<TAG_1:6>value4<TAG-2:6>value5<TAG3:6>value6<EOR>
+FOO;
+		$adif = new adif($data);
+		$expected = array(
+				array(
+						'TAG1' => 'value#1',
+						'TAG2' => 'value2',
+						'TAG3' => 'value3',
+				),
+		);
+		$this->assertEquals($adif->parser(), $expected);
+	}
+		
 	public function testJapaneseData() {
 
 $data = <<<FOO
@@ -185,5 +206,160 @@ FOO;
 		$this->assertEquals($adif->parser(), $expected);
 	}
 	
+	public function testADIFFile() {
+		$adif = new adif('LOGLIST.adi');
+		$data = $adif->parser();
+		$expected = array(
+				array(
+					"CALL" => "JA1AAA",
+					"QSO_DATE" => "20080619",
+					"TIME_ON" => "1205",
+					"FREQ" => "432.94",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "51",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "N",
+					"NAME" => "すぎうら",
+					"QTH" => "東京都目黒区",
+					"COMMENT" => "Rig#9<あ>",
+					),
+				array(
+					"CALL" => "JA1BBB",
+					"QSO_DATE" => "20080621",
+					"TIME_ON" => "0450",
+					"FREQ" => "432.98",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "53",
+					"RST_RCVD" => "57",
+					"QSL_SENT" => "*",
+					"NAME" => "みぞぐち",
+					"QTH" => "神奈川県横須賀市",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1CCC",
+					"QSO_DATE" => "20080621",
+					"TIME_ON" => "2327",
+					"FREQ" => "433.44",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "E",
+					"QSL_RCVD" => "E",
+					"NAME" => "こみや",
+					"QTH" => "横浜市中区",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1DDD",
+					"QSO_DATE" =>  "20080622",
+					"TIME_ON" => "1540",
+					"FREQ" => "433.40",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "51",
+					"QSL_SENT" => "E",
+					"QSL_RCVD" => "E",
+					"NAME" => "小野",
+					"QTH" => "東京都大田区",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1EEE",
+					"QSO_DATE" => "20080630",
+					"TIME_ON" => "1426",
+					"FREQ" => "433.06",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "*",
+					"NAME" => "小林",
+					"QTH" => "川崎市幸区",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1FFF",
+					"QSO_DATE" => "20080701",
+					"TIME_ON" => "1315",
+					"FREQ" => "433.140",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "*",
+					"NAME" => "島崎",
+					"QTH" => "横浜市港北区",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1GGG",
+					"QSO_DATE" => "20080704",
+					"TIME_ON" => "1159",
+					"FREQ" => "433.040",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "E",
+					"NAME" => "小坂",
+					"QTH" => "千葉県木更津市",
+					"COMMENT" => "Rig#9",
+					),
+				array(
+					"CALL" => "JA1HHH",
+					"QSO_DATE" => "20080705",
+					"TIME_ON" => "1002",
+					"FREQ" => "432.840",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "55",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "*",
+					"QTH" => "静岡県伊豆市",
+					"COMMENT" => "Rig#13",
+					),
+				array(
+					"CALL" => "JA1III/1",
+					"QSO_DATE" => "20080705",
+					"TIME_ON" => "1009",
+					"FREQ" => "432.96",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "*",
+					"NAME" => "くらた",
+					"QTH" => "神奈川県横浜市",
+					"COMMENT" => "Rig#13",
+					),
+				array(
+					"CALL" => "JA1JJJ",
+					"QSO_DATE" =>  "20080705",
+					"TIME_ON" => "1032",
+					"FREQ" => "433.200",
+					"BAND" => "70cm",
+					"MODE" => "FM",
+					"RST_SENT" => "59",
+					"RST_RCVD" => "59",
+					"QSL_SENT" => "*",
+					"QSL_RCVD" => "*",
+					"NAME" => "かみしろ",
+					"QTH" => "神奈川県横須賀市",
+					"COMMENT" => "Rig#13",
+					),
+		);
+		$this->assertEquals($adif->parser(), $expected);
+	}
+
 }
 ?>

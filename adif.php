@@ -50,7 +50,7 @@ class adif {
  * データのロードを行う。
  * データの初期化を行う。
  * 
- * @param string $data ADIFデータまたはADIFファイル。ADIFファイルの場合は、拡張子が.adifとなる。
+ * @param string $data ADIFデータまたはADIFファイル。ADIFファイルの場合は、拡張子が.adiまたは.adifとなる。
  * @param array $options オプション
  * 					'code' =>　'sjis-win' (デフォルト）
  * 						ADIFデータの文字コード。値長の指定がマルチバイト文字が２バイト固定なので、内部でシフトJISで処理するための措置。
@@ -61,7 +61,7 @@ class adif {
 		
 		$this->options = array_merge($this->options, $options);
 		
-		if(pathinfo($data, PATHINFO_EXTENSION) == 'adif') {
+		if(in_array(pathinfo($data, PATHINFO_EXTENSION), array('adi', 'adif'))) {
 			// ファイルの拡張子がadifであったらファイルからデータを読み込む。
 			$this->loadFile($data);
 		} else {
@@ -85,32 +85,26 @@ class adif {
 	protected function initialize() {
 		
 		// ヘッダを無視する。
-		$pos = mb_strripos($this->data, '<EOH>');
+		$pos = strripos($this->data, '<EOH>');
 		if($pos === false) {
 			throw new Exception('<EOH>がADFIファイルに存在しません。');
 		};
 		
+		$data = substr($this->data, $pos + 5, strlen($this->data) - $pos - 5);
+	
+		// 先頭が#である行はコメントとして無視する。
+		$data = str_replace(array("\r\n", "\r"), "\n", $data); 
+		$lines = explode("\n", $data);
 		$data = '';
-		$i = $pos + 5;
-		while($i < mb_strlen($this->data)) {
-			
-			//　コメントを無視する。
-			if(mb_substr($this->data, $i, 1) == "#") {
-				while($i < $pos) {
-					if(mb_substr($this->data, $i, 1) == "\n") {
-						break;
-					}
-					$i++;
-				}
-			} else {
-				$data = $data . mb_substr($this->data, $i, 1);
+		foreach ($lines as $line) {
+			if(substr(ltrim($line), 0, 1) != '#') {
+				$data = $data . $line;
 			}
-			$i++;
-		};
-		
-		$data = str_replace(array("\r\n","\r","\n"), '', $data);
-		$data = str_ireplace('<eor>', '<EOR>', $data);
-		$this->records = explode('<EOR>', $data);
+		}
+
+		// <EOR>でレコードを区切る。
+		$records = str_ireplace('<eor>', '<EOR>', $data);
+		$this->records = explode('<EOR>', $records);
 	}
 	
 /**
@@ -141,6 +135,8 @@ class adif {
 		
 		$datas = array();
 		foreach ($this->records as $record) {
+			
+			// レコードに何も入っていなければ無視する。
 			if(empty($record)) continue;
 
 			$data = array();
@@ -156,6 +152,9 @@ class adif {
 				$delimiter = FALSE;
 					
 				switch ($ch) {
+					case '\n':
+					case '\r':
+						continue;
 					case '<':
 						$tag = '';
 						$value = '';
@@ -195,7 +194,7 @@ class adif {
 
 			$datas[] = $data;
 		}
-	
+
 		return $datas;
 	}
 	
