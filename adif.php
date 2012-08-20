@@ -9,26 +9,53 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       php-adif
+ * @version       0.1
+ * @since         0.1
+ * @author        Mune Ando
  * @copyright     Copyright 2012, Mune Ando (http://wwww.5cho-me.com/)
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class adif
-{
-
-	private $data;						// 処理するADIFデータを格納する。
-	private $records = array();			// <EOR>で分割したレコードを格納する。
-	private $options = array(			// デフォルトオプション
-				'code'	=> 'sjis-win',
-				);
+class adif {
+	
+/**
+ * 処理するADIFデータを格納する。
+ * 
+ * @var array
+ */
+	private $data;
+	
+/**
+ * 
+ * <EOR>で分割したレコードを格納する。
+ * 
+ * @var array
+ */
+	private $records = array();
+	
+/**
+ *
+ * デフォルトオプション
+ * 
+ * @var array
+ */
+	private $options = array(
+			'code'	=> 'sjis-win',
+			);
 
 /**
  * コンストラクター
+ * 
+ * オプションの初期化を行う。
+ * データのロードを行う。
+ * データの初期化を行う。
  * 
  * @param string $data ADIFデータまたはADIFファイル。ADIFファイルの場合は、拡張子が.adifとなる。
  * @param array $options オプション
  * 					'code' =>　'sjis-win' (デフォルト）
  * 						ADIFデータの文字コード。値長の指定がマルチバイト文字が２バイト固定なので、内部でシフトJISで処理するための措置。
  * 						シフトJISならマルチバイトは２文字、UTF-8ならマルチバイトも１文字にするなど。
+ * 						Hamlogで生成されるADIFはマルチバイト文字は2バイト固定で値長に格納されるので、'sjis-win'をして文字コードはシフトJISにすること。
  */
 	public function __construct($data, $options=array()) {
 		
@@ -52,8 +79,10 @@ class adif
  * <EOH>以降を処理の対象にする
  * ＃以下をコメントにする。
  * 各レコードは<EOR>で区切って配列に格納する。
+ * 
+ * @throws Exception　データに<EOH>がないときに発生する。
  */
-	public function initialize() {
+	protected function initialize() {
 		
 		// ヘッダを無視する。
 		$pos = mb_strripos($this->data, '<EOH>');
@@ -86,9 +115,10 @@ class adif
 	
 /**
  * ADIFデータとしてストリングを読み込む
+ * 
  * @param string $data ADIFデータ
  */
-	public function loadData($data)
+	protected function loadData($data)
 	{
 		$this->data = $data;
 	}
@@ -98,7 +128,7 @@ class adif
  * 
  * @param string $fname ADIFファイル名
  */
-	public function loadFile($fname)
+	protected function loadFile($fname)
 	{
 		$this->data = file_get_contents($fname);
 	}
@@ -204,9 +234,9 @@ class adif
 /**
  * 文字列の一部を切り取るが、指定した内部コードによって文字の取り扱いを変える。
  * 
- * @param unknown_type $string 部分文字列を取り出したい文字列。
- * @param unknown_type $start string の中から最初に取り出す文字の位置。
- * @param unknown_type $length string の中から取り出す最大文字数。
+ * @param string $string 部分文字列を取り出したい文字列。
+ * @param int $start string の中から最初に取り出す文字の位置。
+ * @param int $length string の中から取り出す最大文字数。
  */
 	protected function substr($string, $start, $length) {
 	
